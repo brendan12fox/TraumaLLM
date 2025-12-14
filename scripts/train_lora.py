@@ -193,7 +193,7 @@ class WeightedTrainer(Trainer):
         super().__init__(*args, **kwargs)
         self.class_weight = class_weight
     
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         """Compute weighted loss."""
         labels = inputs.get("labels")
         outputs = model(**inputs)
