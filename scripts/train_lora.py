@@ -88,8 +88,16 @@ def format_prompt(example: Dict[str, Any]) -> str:
     return prompt
 
 def tokenize_function(examples: Dict[str, Any], tokenizer) -> Dict[str, Any]:
-    """Tokenize examples."""
-    prompts = [format_prompt(ex) for ex in examples]
+    """Tokenize examples (batched format from datasets library)."""
+    # When batched=True, examples is a dict of lists like {'instruction': [...], 'input': [...], ...}
+    # Convert to list of dicts
+    batch_size = len(examples['instruction']) if 'instruction' in examples else len(list(examples.values())[0])
+    example_list = []
+    for i in range(batch_size):
+        ex = {k: v[i] if isinstance(v, list) else v for k, v in examples.items()}
+        example_list.append(ex)
+    
+    prompts = [format_prompt(ex) for ex in example_list]
     tokenized = tokenizer(
         prompts,
         truncation=True,
@@ -244,21 +252,6 @@ def main():
     print("\nTokenizing datasets...")
     train_dataset = Dataset.from_list(train_examples)
     test_dataset = Dataset.from_list(test_examples)
-    
-    # Tokenize with batched=True for proper dict handling
-    def tokenize_batch(examples):
-        """Tokenize a batch of examples."""
-        prompts = [format_prompt(ex) for ex in [examples] if isinstance(examples, dict) else examples]
-        tokenized = tokenizer(
-            prompts,
-            truncation=True,
-            padding=True,
-            max_length=MAX_SEQ_LENGTH,
-            return_tensors=None
-        )
-        # For causal LM, labels are the same as input_ids
-        tokenized['labels'] = tokenized['input_ids'].copy()
-        return tokenized
     
     train_dataset = train_dataset.map(
         tokenize_function,
