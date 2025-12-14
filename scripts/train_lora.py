@@ -278,7 +278,7 @@ def main():
         logging_steps=LOGGING_STEPS,
         save_steps=SAVE_STEPS,
         eval_steps=EVAL_STEPS,
-        evaluation_strategy="steps",
+        eval_strategy="steps",  # Changed from evaluation_strategy (deprecated)
         save_strategy="steps",
         load_best_model_at_end=True,
         metric_for_best_model="eval_loss",
