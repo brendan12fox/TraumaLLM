@@ -15,10 +15,15 @@ def check_files():
     """Check that required files exist."""
     print("Checking required files...")
     
+    # Check for data file (try both names)
+    data_file = PROJECT_ROOT / "data" / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx"
+    if not data_file.exists():
+        data_file = PROJECT_ROOT / "data" / "OCH_RCH_2023_2025_Combined_Master_V11.xlsx"
+    
     required = {
         'Dataset': PROJECT_ROOT / "outputs" / "instruction_dataset.jsonl",
         'Rules': PROJECT_ROOT / "rules" / "trauma_triage_rules.json",
-        'Data copy': PROJECT_ROOT / "data" / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx",
+        'Data file': data_file,
     }
     
     all_ok = True

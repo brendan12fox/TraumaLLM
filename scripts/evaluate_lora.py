@@ -98,7 +98,10 @@ DATA_DIR = PROJECT_ROOT / "data"
 
 DATASET_FILE = OUTPUTS_DIR / "instruction_dataset.jsonl"
 MODEL_DIR = MODELS_DIR / "lora_adapter"
+# Try EXP_B_COPY first, fall back to original V11 if copy doesn't exist
 MASTER_FILE = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx"
+if not MASTER_FILE.exists():
+    MASTER_FILE = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11.xlsx"
 
 # Validation strategy (same as Experiment A)
 N_SPLITS = 5

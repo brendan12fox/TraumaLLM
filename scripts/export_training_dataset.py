@@ -31,7 +31,10 @@ PROJECT_ROOT = Path(__file__).parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
+# Try EXP_B_COPY first, fall back to original V11 if copy doesn't exist
 INPUT_FILE = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx"
+if not INPUT_FILE.exists():
+    INPUT_FILE = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11.xlsx"
 # Try data/ folder first (for cloud), then fall back to original location
 CLEANED_JSON_PATH = DATA_DIR / "V11_cleaned_transcripts_gpt5nano.json"
 if not CLEANED_JSON_PATH.exists():
