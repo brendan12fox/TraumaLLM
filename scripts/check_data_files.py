@@ -27,14 +27,23 @@ if DATA_DIR.exists():
     else:
         print("  (empty)")
 
-# Check for required files
+# Check for required files (try both Excel filenames)
 required_excel = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx"
+if not required_excel.exists():
+    required_excel = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11.xlsx"
 required_json = DATA_DIR / "V11_cleaned_transcripts_gpt5nano.json"
 
 print(f"\nRequired files:")
-print(f"  Excel: {required_excel.name}")
-print(f"    Exists: {'✅ YES' if required_excel.exists() else '❌ NO'}")
-if required_excel.exists():
+print(f"  Excel: {required_excel.name} (or EXP_B_COPY version)")
+excel_found = required_excel.exists()
+# Also check the other variant
+if not excel_found:
+    alt_excel = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11.xlsx"
+    if alt_excel.exists():
+        required_excel = alt_excel
+        excel_found = True
+print(f"    Exists: {'✅ YES' if excel_found else '❌ NO'}")
+if excel_found:
     size_mb = required_excel.stat().st_size / (1024 * 1024)
     print(f"    Size: {size_mb:.2f} MB")
 
@@ -71,12 +80,18 @@ if parent_data.exists():
 
 print("\n" + "="*70)
 print("RECOMMENDATION:")
-if not required_excel.exists():
+if not excel_found:
     print("  ❌ Excel file missing - Upload via RunPod Web UI")
-    print(f"     Expected: {required_excel}")
+    print(f"     Accepts either: OCH_RCH_2023_2025_Combined_Master_V11.xlsx")
+    print(f"                  or: OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx")
 if not required_json.exists():
     print("  ❌ JSON file missing - Upload via RunPod Web UI")
-    print(f"     Expected: {required_json}")
-if required_excel.exists() and required_json.exists():
+    print(f"     Expected: V11_cleaned_transcripts_gpt5nano.json")
+if excel_found and required_json.exists():
     print("  ✅ All required files present!")
+    print("     Next steps:")
+    print("       1. python3 scripts/build_canonical_state.py")
+    print("       2. python3 scripts/export_training_dataset.py")
+    print("       3. python3 scripts/verify_setup.py")
+    print("       4. python3 scripts/train_lora.py")
 print("="*70)
