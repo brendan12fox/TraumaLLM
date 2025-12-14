@@ -264,7 +264,12 @@ def cross_validate_lora(examples: List[Dict[str, Any]],
         'accuracy': []
     }
     
+    total_folds = N_SPLITS * N_REPEATS
+    print(f"  Running {total_folds} CV folds ({N_SPLITS} splits × {N_REPEATS} repeats)...")
+    
     for fold_idx, (train_idx, test_idx) in enumerate(rskf.split(examples, y)):
+        if (fold_idx + 1) % 5 == 0 or fold_idx == 0:
+            print(f"  Fold {fold_idx + 1}/{total_folds}...")
         # Get test examples
         test_examples = [examples[i] for i in test_idx]
         y_test = y[test_idx]
