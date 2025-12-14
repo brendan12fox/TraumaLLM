@@ -1,0 +1,42 @@
+# Models (too large for git, download separately)
+models/
+*.bin
+*.safetensors
+*.pt
+*.pth
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training outputs
+*.log
+wandb/
+runs/
+
+# Data (keep structure, ignore large files)
+data/*.xlsx
+!data/.gitkeep
+
+# Large outputs
+outputs/*.jsonl
+outputs/*.csv
+!outputs/.gitkeep

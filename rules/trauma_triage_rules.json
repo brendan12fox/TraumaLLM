@@ -1,0 +1,187 @@
+{
+  "rules": [
+    {
+      "rule_id": "hypotension_child",
+      "description": "SBP below age-adjusted threshold suggests shock",
+      "category": "hypotension",
+      "thresholds": [
+        {
+          "age_min": 0,
+          "age_max": 1,
+          "sbp_min": 70,
+          "note": "Infant threshold"
+        },
+        {
+          "age_min": 1,
+          "age_max": 10,
+          "sbp_min": 70,
+          "formula": "70 + 2*age",
+          "note": "Pediatric age-adjusted formula"
+        },
+        {
+          "age_min": 10,
+          "age_max": 99,
+          "sbp_min": 90,
+          "note": "Adult threshold"
+        }
+      ],
+      "signal_strength": "high",
+      "overtriage_prone": false,
+      "driver_name": "hypotension"
+    },
+    {
+      "rule_id": "low_gcs",
+      "description": "GCS < 13 indicates significant neurological impairment",
+      "category": "neurological",
+      "threshold": 13,
+      "comparison": "<",
+      "signal_strength": "high",
+      "overtriage_prone": false,
+      "driver_name": "low_gcs"
+    },
+    {
+      "rule_id": "high_risk_moi_mvc",
+      "description": "High-speed MVC with intrusion or rollover",
+      "category": "mechanism",
+      "keywords": [
+        "high speed",
+        "high-speed",
+        "high rate of speed",
+        "rollover",
+        "rolled",
+        "intrusion",
+        "ejected",
+        "ejection"
+      ],
+      "signal_strength": "high",
+      "overtriage_prone": true,
+      "driver_name": "high_risk_moi"
+    },
+    {
+      "rule_id": "high_risk_moi_fall",
+      "description": "Fall from height > 15 feet or > 3 times patient height",
+      "category": "mechanism",
+      "keywords": [
+        "fall from",
+        "fell from",
+        "jumped from",
+        "dropped from"
+      ],
+      "height_threshold": 15,
+      "signal_strength": "medium",
+      "overtriage_prone": true,
+      "driver_name": "high_risk_moi"
+    },
+    {
+      "rule_id": "high_risk_moi_pedestrian",
+      "description": "Pedestrian struck by vehicle",
+      "category": "mechanism",
+      "keywords": [
+        "pedestrian",
+        "ped struck",
+        "hit by car",
+        "struck by vehicle"
+      ],
+      "signal_strength": "high",
+      "overtriage_prone": false,
+      "driver_name": "high_risk_moi"
+    },
+    {
+      "rule_id": "high_risk_moi_motorcycle",
+      "description": "Motorcycle crash",
+      "category": "mechanism",
+      "keywords": [
+        "motorcycle",
+        "motorcycle crash",
+        "moped",
+        "bike crash"
+      ],
+      "signal_strength": "medium",
+      "overtriage_prone": true,
+      "driver_name": "high_risk_moi"
+    },
+    {
+      "rule_id": "altered_mental_status",
+      "description": "Altered mental status, unresponsive, or decreased LOC",
+      "category": "neurological",
+      "keywords": [
+        "altered",
+        "unresponsive",
+        "unconscious",
+        "confused",
+        "disoriented",
+        "lethargic",
+        "combative",
+        "agitated",
+        "loc",
+        "loss of consciousness"
+      ],
+      "signal_strength": "high",
+      "overtriage_prone": false,
+      "driver_name": "ams"
+    },
+    {
+      "rule_id": "respiratory_distress",
+      "description": "Abnormal respiratory rate indicating distress",
+      "category": "respiratory",
+      "thresholds": [
+        {
+          "age_min": 0,
+          "age_max": 5,
+          "rr_min": 20,
+          "rr_max": 40,
+          "note": "Pediatric normal range"
+        },
+        {
+          "age_min": 5,
+          "age_max": 99,
+          "rr_min": 12,
+          "rr_max": 20,
+          "note": "Adult normal range"
+        }
+      ],
+      "signal_strength": "medium",
+      "overtriage_prone": false,
+      "driver_name": "resp_distress"
+    },
+    {
+      "rule_id": "multi_system_suspicion",
+      "description": "Multiple body regions injured suggesting multi-system trauma",
+      "category": "clinical_judgment",
+      "indicators": [
+        "head and",
+        "chest and",
+        "abdomen and",
+        "multiple injuries",
+        "multiple systems"
+      ],
+      "signal_strength": "medium",
+      "overtriage_prone": true,
+      "driver_name": "multi_system_injury_suspected"
+    },
+    {
+      "rule_id": "insufficient_info",
+      "description": "Critical information missing that prevents safe triage decision",
+      "category": "metadata",
+      "required_fields": [
+        "age",
+        "sbp",
+        "gcs",
+        "moi"
+      ],
+      "missing_threshold": 3,
+      "signal_strength": "low",
+      "overtriage_prone": false,
+      "driver_name": "insufficient_info"
+    }
+  ],
+  "driver_vocabulary": [
+    "hypotension",
+    "low_gcs",
+    "ams",
+    "high_risk_moi",
+    "resp_distress",
+    "multi_system_injury_suspected",
+    "insufficient_info"
+  ]
+}
