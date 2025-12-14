@@ -124,17 +124,41 @@ def load_lora_model():
     try:
         base_model_name = "mistralai/Mistral-7B-Instruct-v0.2"
         tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-        base_model = AutoModelForCausalLM.from_pretrained(
-            base_model_name,
-            load_in_4bit=True,
-            device_map="auto",
-            torch_dtype=torch.float16,
-        )
+        
+        # Check if CUDA is available for 4-bit quantization
+        if torch.cuda.is_available():
+            try:
+                from transformers import BitsAndBytesConfig
+                quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+                base_model = AutoModelForCausalLM.from_pretrained(
+                    base_model_name,
+                    quantization_config=quantization_config,
+                    device_map="auto",
+                    torch_dtype=torch.float16,
+                )
+            except Exception:
+                # Fallback to regular loading if bitsandbytes not available
+                base_model = AutoModelForCausalLM.from_pretrained(
+                    base_model_name,
+                    device_map="auto",
+                    torch_dtype=torch.float16,
+                )
+        else:
+            # CPU-only: load in float32 (or float16 if supported)
+            print("  ⚠️  CUDA not available, loading model on CPU (this will be slow)")
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_name,
+                torch_dtype=torch.float32,  # CPU works better with float32
+                low_cpu_mem_usage=True,
+            )
+        
         model = PeftModel.from_pretrained(base_model, MODEL_DIR)
         model.eval()
         return model, tokenizer
     except Exception as e:
         print(f"⚠️  Error loading model: {e}")
+        import traceback
+        traceback.print_exc()
         return None, None
 
 def predict_lora(model, tokenizer, example: Dict[str, Any]) -> Dict[str, Any]:
@@ -308,27 +332,38 @@ def load_experiment_a_results() -> Optional[Dict[str, Any]]:
     
     try:
         df = pd.read_csv(exp_a_file)
-        lr_row = df[df['Model'] == 'Regularized Logistic Regression'].iloc[0]
+        lr_rows = df[df['Model'] == 'Regularized Logistic Regression']
+        if len(lr_rows) == 0:
+            print(f"⚠️  No 'Regularized Logistic Regression' row found in {exp_a_file}")
+            return None
+        lr_row = lr_rows.iloc[0]
         
         # Parse metrics from string format "0.5664 [0.2397, 0.7778]"
         def parse_metric(value):
-            match = pd.Series([value]).str.extract(r'([\d.]+)\s*\[([\d.]+),\s*([\d.]+)\]')[0]
-            if match.iloc[0] is not None:
+            if pd.isna(value) or value == '':
+                return None
+            import re
+            match = re.match(r'([\d.]+)\s*\[([\d.]+),\s*([\d.]+)\]', str(value))
+            if match:
                 return {
-                    'mean': float(match.iloc[0]),
-                    'ci_lower': float(match.iloc[1]),
-                    'ci_upper': float(match.iloc[2])
+                    'mean': float(match.group(1)),
+                    'ci_lower': float(match.group(2)),
+                    'ci_upper': float(match.group(3))
                 }
             return None
         
         results = {}
         for col in ['sensitivity', 'specificity', 'precision', 'roc_auc', 'pr_auc', 'brier_score', 'accuracy']:
-            if col in lr_row:
-                results[col] = parse_metric(lr_row[col])
+            if col in lr_row.index:
+                parsed = parse_metric(lr_row[col])
+                if parsed:
+                    results[col] = parsed
         
-        return results
+        return results if results else None
     except Exception as e:
         print(f"⚠️  Error loading Experiment A results: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 # ============================================================================
@@ -366,7 +401,7 @@ def main():
     # Load zero-shot conservative results
     print("\nLoading zero-shot conservative baseline...")
     zeroshot_metrics = None
-    if HAS_EXP_A:
+    if exp_a_results:
         # Load master file to get audio_file mapping
         master_df = pd.read_excel(MASTER_FILE)
         master_df = master_df[master_df['exclusion_criteria'] == 'include'].copy()
@@ -536,3 +571,4 @@ Accuracy: {lora_results['accuracy']['mean']:.3f}
 if __name__ == "__main__":
     success = main()
     exit(0 if success else 1)
+
