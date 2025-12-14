@@ -12,8 +12,10 @@ git pull origin main
 Open RunPod file browser and navigate to `/workspace/TraumaLLM/data/`
 
 ### Upload File 1: Excel Dataset
-- **Local path on Mac**: `CombinedData/OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx`
-- **Upload to**: `/workspace/TraumaLLM/data/OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx`
+- **Local path on Mac**: `CombinedData/OCH_RCH_2023_2025_Combined_Master_V11.xlsx`
+  (or `OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx` if you have a copy)
+- **Upload to**: `/workspace/TraumaLLM/data/OCH_RCH_2023_2025_Combined_Master_V11.xlsx`
+  (script will accept either `V11.xlsx` or `V11_EXP_B_COPY.xlsx` filename)
 
 ### Upload File 2: Cleaned JSON
 - **Local path on Mac**: `CombinedData/November 17 complete data set/cleaned_outputs/V11_cleaned_transcripts_gpt5nano.json`
@@ -53,8 +55,8 @@ From your **local Mac terminal**:
 ```bash
 # Get your RunPod SSH info from RunPod dashboard
 
-# Upload Excel
-scp "CombinedData/OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx" \
+# Upload Excel (use actual filename you have)
+scp "CombinedData/OCH_RCH_2023_2025_Combined_Master_V11.xlsx" \
     root@YOUR_RUNPOD_HOST:/workspace/TraumaLLM/data/
 
 # Upload JSON  
