@@ -32,7 +32,10 @@ DATA_DIR = PROJECT_ROOT / "data"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
 INPUT_FILE = DATA_DIR / "OCH_RCH_2023_2025_Combined_Master_V11_EXP_B_COPY.xlsx"
-CLEANED_JSON_PATH = PROJECT_ROOT.parent / "CombinedData" / "November 17 complete data set" / "cleaned_outputs" / "V11_cleaned_transcripts_gpt5nano.json"
+# Try data/ folder first (for cloud), then fall back to original location
+CLEANED_JSON_PATH = DATA_DIR / "V11_cleaned_transcripts_gpt5nano.json"
+if not CLEANED_JSON_PATH.exists():
+    CLEANED_JSON_PATH = PROJECT_ROOT.parent / "CombinedData" / "November 17 complete data set" / "cleaned_outputs" / "V11_cleaned_transcripts_gpt5nano.json"
 
 CANONICAL_STATES_FILE = OUTPUTS_DIR / "canonical_states.jsonl"
 OUTPUT_FILE = OUTPUTS_DIR / "instruction_dataset.jsonl"
