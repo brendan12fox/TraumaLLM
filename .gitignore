@@ -33,8 +33,11 @@ wandb/
 runs/
 
 # Data (keep structure, ignore large files)
-data/*.xlsx
+# Note: We're including the required data files for cloud execution
+# data/*.xlsx  # Commented out to allow pushing required files
 !data/.gitkeep
+!data/OCH_RCH_2023_2025_Combined_Master_V11*.xlsx
+!data/V11_cleaned_transcripts_gpt5nano.json
 
 # Large outputs
 outputs/*.jsonl
